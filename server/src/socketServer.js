@@ -7,6 +7,9 @@ const {
 const messageFormat = require("./helpers/sockets/messageFormat");
 const runConversation = require("./helpers/sockets/gpt/gpt");
 const { createNewCount } = require("./services/questionCountServices");
+const {
+  profanityFilter,
+} = require("./helpers/sockets/ProfanityFilter/ProfanityFilter");
 
 const listen = async (io) => {
   const bot = { name: "T-AI" };
@@ -64,7 +67,22 @@ const listen = async (io) => {
       // check if questioncount exist
       const userQuestionCount = await createNewCount(user.userData.username);
 
+      // profanity filter
+      const isBad = await profanityFilter(msg.message);
+
       if (user.room === user.userData.username) {
+        if (isBad) {
+          return io
+            .to(user.room)
+            .emit(
+              "message",
+              messageFormat(
+                bot.name,
+                "Vulgar words are not permitted",
+                undefined
+              )
+            );
+        }
         if (userQuestionCount.count > 0) {
           return io
             .to(user.room)
@@ -78,7 +96,8 @@ const listen = async (io) => {
             );
         }
 
-        const response = await runConversation(msg.message);
+        const response = "Ai responded";
+        // await runConversation(msg.message);
         if (response && userQuestionCount.count == 0) {
           io.to(user.room).emit(
             "message",

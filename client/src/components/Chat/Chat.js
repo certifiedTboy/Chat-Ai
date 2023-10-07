@@ -34,7 +34,7 @@ const Chat = () => {
         <Col lg={2} md={4} sm={2} xs={2}>
           <ChatRooms />
         </Col>
-        <Col lg={8} md={8} sm={10} xs={10}>
+        <Col lg={8} md={8} sm={10} xs={10} className="mr-5">
           {params.chatTitle && (
             <MainChat getCurrentRoomUsers={getCurrentRoomUsers} />
           )}
@@ -54,7 +54,8 @@ const Chat = () => {
                     />
                     <NavLink
                       className={classes.room_link}
-                      to={`/chat/${user.userData.username}`}>
+                      to={`/chat/${user.userData.username}`}
+                    >
                       {" "}
                       {user.userData.username}
                     </NavLink>
