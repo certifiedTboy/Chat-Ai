@@ -1,0 +1,19 @@
+.nav_mag {
+    margin-right: 30px ;
+    color: rgb(133, 133, 177);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.nav_mag:hover {
+    margin-right: 30px ;
+    color: rgb(241, 141, 10);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.profile_image {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+}
