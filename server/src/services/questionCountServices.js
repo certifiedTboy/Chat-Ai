@@ -1,5 +1,10 @@
 const QuestionCount = require("../models/questionCount");
 
+/**
+ * @method updateUserPassword
+ * @param {string} username
+ * @return {Object<QuestionCount>}
+ */
 const createNewCount = async (username) => {
   const count = await QuestionCount.findOne({ username });
 

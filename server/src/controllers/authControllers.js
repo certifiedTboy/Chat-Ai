@@ -5,6 +5,13 @@ const {
 
 const { deleteSession } = require("../services/sessionService");
 
+/**
+ * @method userLoginWithGoogle
+ * @param {Request}req
+ * @param {Response}res
+ * @param {NextFunction}next
+ * @return {Promise}
+ */
 const userLoginWithGoogle = async (req, res) => {
   try {
     const { authToken } = req.body;
@@ -30,6 +37,13 @@ const userLoginWithGoogle = async (req, res) => {
   }
 };
 
+/**
+ * @method getUserSession
+ * @param {Request}req
+ * @param {Response}res
+ * @param {NextFunction}next
+ * @return {Promise}
+ */
 const getUserSession = async (req, res) => {
   try {
     const { email } = req.user;
@@ -63,6 +77,13 @@ const getUserSession = async (req, res) => {
   }
 };
 
+/**
+ * @method logOutUser
+ * @param {Request}req
+ * @param {Response}res
+ * @param {NextFunction}next
+ * @return {Promise}
+ */
 const logOutUser = async (req, res) => {
   try {
     const { authToken } = req.cookies;

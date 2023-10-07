@@ -4,6 +4,11 @@ const {
   checkSessionExistByEmail,
 } = require("./sessionService");
 
+/**
+ * @method authenticateWithGoogle
+ * @param {string} token
+ * @return {object<UserSession>}
+ */
 const authenticateWithGoogle = async (token) => {
   const decodedToken = await decodeURIComponent(token);
   const { given_name, family_name, email, picture, exp } = await verifyToken(
@@ -27,6 +32,11 @@ const authenticateWithGoogle = async (token) => {
   }
 };
 
+/**
+ * @method getCurrentUserSession
+ * @param {string} email
+ * @return {object<UserSession>}
+ */
 const getCurrentUserSession = async (email) => {
   const userSession = await checkSessionExistByEmail(email);
 
