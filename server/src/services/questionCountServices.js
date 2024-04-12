@@ -1,6 +1,27 @@
 const QuestionCount = require("../models/questionCount");
 
 /**
+ * @method createCount
+ * @param {string} username
+ * @return {Object<QuestionCount>}
+ */
+const createCount = async (username) => {
+  const count = await QuestionCount.findOne({ username });
+
+  if (!count) {
+    return await QuestionCount.create({ username, count: 0 });
+  }
+
+  const currentDate = new Date();
+  if (count.updatedAt - currentDate >= 0) {
+    await QuestionCount.findOneAndUpdate({
+      username,
+      count: 0,
+    });
+  }
+};
+
+/**
  * @method updateUserPassword
  * @param {string} username
  * @return {Object<QuestionCount>}
@@ -8,10 +29,6 @@ const QuestionCount = require("../models/questionCount");
 const createNewCount = async (username) => {
   const count = await QuestionCount.findOne({ username });
 
-  if (!count) {
-    const newCount = await QuestionCount.create({ username, count: 0 });
-    return newCount;
-  }
   if (count.count === 0) {
     const newCount = await QuestionCount.findOneAndUpdate({
       username,
@@ -19,14 +36,8 @@ const createNewCount = async (username) => {
     });
     return newCount;
   }
-  if (count.updatedAt - new Date() >= 0) {
-    const updateCount = await QuestionCount.findOneAndUpdate({
-      username,
-      count: 0,
-    });
-    return updateCount;
-  }
+
   return count;
 };
 
-module.exports = { createNewCount };
+module.exports = { createNewCount, createCount };

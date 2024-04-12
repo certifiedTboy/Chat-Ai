@@ -68,7 +68,8 @@ const listen = async (io) => {
       const userQuestionCount = await createNewCount(user.userData.username);
 
       // profanity filter
-      const isBad = await profanityFilter(msg.message);
+      const isBad = false;
+      // await profanityFilter(msg.message);
 
       if (user.room === user.userData.username) {
         if (isBad) {
@@ -97,7 +98,7 @@ const listen = async (io) => {
         }
 
         const response = "Ai responded";
-        // await runConversation(msg.message);
+        // const response = await runConversation(msg.message);
         if (response && userQuestionCount.count == 0) {
           io.to(user.room).emit(
             "message",

@@ -6,7 +6,6 @@ const { RAPID_API_KEY, RAPID_API_HOST, FILTER_URL } = envVariable;
 const encodedParams = new URLSearchParams();
 
 const profanityFilter = async (word) => {
-  console.log("i ran");
   encodedParams.set("content", `${word}`);
   encodedParams.set("censor-character", "*");
 
