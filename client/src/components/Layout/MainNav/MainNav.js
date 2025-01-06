@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Container, Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import profileImage from "../../../Assets/images/emmatosin.jpg";
 import { useSelector, useDispatch } from "react-redux";

@@ -1,8 +1,16 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
+import { useSpeech } from "react-text-to-speech";
+import { removeAsteriks } from "../../helpers/messageHelpers";
 import classes from "./Chat.module.css";
 import Moment from "react-moment";
 
 const Message = (props) => {
+  const {
+    isInQueue, // Boolean that stores whether a speech utterance is either being spoken or present in queue
+    start, // Function to start the speech or put it in queue
+    pause, // Function to pause the speech
+  } = useSpeech({ text: removeAsteriks(props?.message) });
+
   return (
     <Fragment>
       <div>
@@ -35,7 +43,22 @@ const Message = (props) => {
                 src={props.userImage}
                 alt="profile img"
               />
-              <p className={classes.messageText}>{props.message}</p>
+              <p className={classes.messageText}>
+                {removeAsteriks(props.message)}
+              </p>
+            </div>
+
+            <div className={classes.btn_div}>
+              <button
+                onClick={!isInQueue ? start : pause}
+                className={classes.speak_btn}
+              >
+                {!isInQueue ? (
+                  <i class="fa-solid fa-play"></i>
+                ) : (
+                  <i class="fa-solid fa-pause"></i>
+                )}
+              </button>
             </div>
           </div>
         )}

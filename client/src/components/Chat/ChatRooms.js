@@ -51,12 +51,12 @@ const ChatRooms = () => {
 
   return (
     <div className="mt-5">
-      <Form.Group>
+      {/* <Form.Group>
         <Form.Control
           className={classes.room_search}
           placeholder="Search Rooms"
         />
-      </Form.Group>
+      </Form.Group> */}
 
       <div className="mt-4">
         {rooms.map((room) => {

@@ -1,5 +1,5 @@
-// const BASE_URL = "http://54.226.85.98:3001/api/v1";
-const BASE_URL = "http://localhost:3001/api/v1";
+const BASE_URL = "https://chat-ai-server-mwfg.onrender.com/api/v1";
+// const BASE_URL = "http://localhost:3001/api/v1";
 
 export const userLogin = async (authToken) => {
   try {
