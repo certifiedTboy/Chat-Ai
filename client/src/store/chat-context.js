@@ -32,13 +32,16 @@ const ChatContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    socket?.current.on("message", (msg) => {
+    const messageSocket = socket?.current;
+    messageSocket.on("message", (msg) => {
       if (msg.type || msg.type === "new-msg") {
         return setSocketMessages([msg]);
       }
 
       setSocketMessages((socketMessage) => [...socketMessage, msg]);
     });
+
+    return () => messageSocket?.off("message");
   }, [socket]);
 
   const joinRoom = (userData, room) => {
