@@ -5,7 +5,10 @@ const v1Routes = require("./routes/index");
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = [
+  "https://chat-ai-client-alpha.vercel.app",
+  "http://localhost:3000",
+];
 
 const expressOptions = {
   urlencodExtended: true,

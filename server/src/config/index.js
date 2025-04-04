@@ -13,6 +13,7 @@ const envVariable = {
   RAPID_API_KEY: env.RAPID_API_KEY,
   RAPID_API_HOST: env.RAPID_API_HOST,
   FILTER_URL: env.FILTER_URL,
+  GEMINI_API_KEY: env.GEMINI_API_KEY,
 };
 
 module.exports = envVariable;

@@ -1,27 +1,6 @@
 const QuestionCount = require("../models/questionCount");
 
 /**
- * @method createCount
- * @param {string} username
- * @return {Object<QuestionCount>}
- */
-const createCount = async (username) => {
-  const count = await QuestionCount.findOne({ username });
-
-  if (!count) {
-    return await QuestionCount.create({ username, count: 0 });
-  }
-
-  const currentDate = new Date();
-  if (count.updatedAt - currentDate >= 0) {
-    await QuestionCount.findOneAndUpdate({
-      username,
-      count: 0,
-    });
-  }
-};
-
-/**
  * @method updateUserPassword
  * @param {string} username
  * @return {Object<QuestionCount>}
@@ -29,7 +8,34 @@ const createCount = async (username) => {
 const createNewCount = async (username) => {
   const count = await QuestionCount.findOne({ username });
 
-  if (count.count === 0) {
+  if (!count) {
+    const newCount = await QuestionCount.create({ username, count: 0 });
+    return newCount;
+  }
+
+  const twentyFourHoursInMins = 24 * 60 * 60 * 1000;
+
+  if (+new Date() - +count.updatedAt >= twentyFourHoursInMins) {
+    const updateCount = await QuestionCount.findOneAndUpdate({
+      username,
+      count: 0,
+    });
+    return updateCount;
+  }
+};
+
+/**
+ * Updates the count for a given user.
+ * If the count is 0, it increments the count by 1 and returns the updated count.
+ * If the count is not 0, it returns the current count.
+ *
+ * @param {string} username - The username of the user.
+ * @returns {Promise<number|null>} - A promise that resolves to the updated count if the count is 0, or the current count if the count is not 0. Returns null if no count is found for the given username.
+ */
+const updateCount = async (username) => {
+  const count = await QuestionCount.findOne({ username });
+
+  if (count && count.count === 0) {
     const newCount = await QuestionCount.findOneAndUpdate({
       username,
       count: 1,
@@ -40,4 +46,4 @@ const createNewCount = async (username) => {
   return count;
 };
 
-module.exports = { createNewCount, createCount };
+module.exports = { createNewCount, updateCount };

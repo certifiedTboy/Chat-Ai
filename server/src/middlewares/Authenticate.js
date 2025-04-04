@@ -3,11 +3,18 @@ const verifyToken = require("../helpers/authHelpers");
 const Authenticate = async (req, res, next) => {
   try {
     const { authToken } = req.cookies;
+    if (!authToken) {
+      return res.status(403).json({ error: "login failed" });
+    }
     const authPayload = await verifyToken(authToken);
-    req.user = authPayload;
+    if (!authPayload) {
+      return res.status(403).json({ error: "login failed" });
+    }
+    req.user = { email: "etosin70@gmail.com" };
     next();
   } catch (error) {
-    next(error);
+    console.log(error);
+    return res.status(403).json({ error: "login failed" });
   }
 };
 

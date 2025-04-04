@@ -6,7 +6,11 @@ const {
 } = require("./helpers/sockets/chatHelpers");
 const messageFormat = require("./helpers/sockets/messageFormat");
 const runConversation = require("./helpers/sockets/gpt/gpt");
-const { createNewCount } = require("./services/questionCountServices");
+const runGeminiConversation = require("./helpers/sockets/googleGemini/googleGemini");
+const {
+  createNewCount,
+  updateCount,
+} = require("./services/questionCountServices");
 const {
   profanityFilter,
 } = require("./helpers/sockets/ProfanityFilter/ProfanityFilter");
@@ -16,16 +20,18 @@ const listen = async (io) => {
 
   // Run when client connects
   io.on("connection", (socket) => {
-    socket.on("joinRoom", ({ userData, room }) => {
+    socket.on("joinRoom", async ({ userData, room }) => {
       const user = userJoin(socket.id, userData, room);
       socket.join(user.room);
+
+      // await createNewCount(userData.username);
 
       if (user.room === userData.username) {
         return socket.emit(
           "message",
           messageFormat(
             bot.name,
-            `Ask general questions to get instant answers... There is limit to numbers of question you are permmitted to ask per day`,
+            `Ask general questions to get instant answers... There is limit to numbers of question you are permmitted to ask per day and vulgar words are not permitted`,
             undefined,
             "new-msg"
           )
@@ -64,12 +70,8 @@ const listen = async (io) => {
         )
       );
 
-      // check if questioncount exist
-      const userQuestionCount = await createNewCount(user.userData.username);
-
       // profanity filter
-      const isBad = false;
-      // await profanityFilter(msg.message);
+      const isBad = await profanityFilter(msg.message);
 
       if (user.room === user.userData.username) {
         if (isBad) {
@@ -84,28 +86,46 @@ const listen = async (io) => {
               )
             );
         }
-        if (userQuestionCount.count > 0) {
+
+        // check if questioncount exist
+        // const userQuestionCount = await updateCount(user.userData.username);
+
+        // if (userQuestionCount.count > 0) {
+        //   return io
+        //     .to(user.room)
+        //     .emit(
+        //       "message",
+        //       messageFormat(
+        //         bot.name,
+        //         "You have exceeded your number of trial to ask questions",
+        //         undefined
+        //       )
+        //     );
+        // }
+
+        // const response = await runGeminiConversation(
+        //   msg.message
+        //   // `${msg.message}  return response in html format wrapping code syntax in pre tag`
+        // );
+
+        const response = "Hello dear how are you doing today?";
+        // const response =
+        //   "```javascript function addNumbers(num1, num2) { return num1 + num2; } const num1 = 5; const num2 = 3; const sum = addNumbers(num1, num2); console.log(sum); // Output: 8 ```";
+        if (response.error) {
           return io
             .to(user.room)
             .emit(
               "message",
-              messageFormat(
-                bot.name,
-                "You have exceeded your number of trial to ask questions",
-                undefined
-              )
+              messageFormat(bot.name, response.error, undefined)
             );
         }
-
-        const response = "Ai responded";
-        // const response = await runConversation(msg.message);
-        if (response && userQuestionCount.count == 0) {
-          io.to(user.room).emit(
-            "message",
-            messageFormat(bot.name, response, undefined)
-          );
-        }
+        // if (userQuestionCount.count == 0) {
+        io.to(user.room).emit(
+          "message",
+          messageFormat(bot.name, response, undefined)
+        );
       }
+      // }
     });
 
     // Runs when client disconnects

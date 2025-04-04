@@ -6,12 +6,20 @@ const openai = new OpenAI({
 });
 
 const runConversation = async (text) => {
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [{ role: "user", content: text }],
-    model: "gpt-3.5-turbo",
-  });
+  try {
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [{ role: "user", content: text }],
+      model: "gpt-3.5-turbo",
+      format: "html",
+    });
 
-  return chatCompletion.choices[0].message.content;
+    return chatCompletion?.choices[0]?.message?.content;
+  } catch (error) {
+    return {
+      error:
+        "This is not you, I am currently having issues processing your question. You can perhaps check back later...",
+    };
+  }
 };
 
 module.exports = runConversation;

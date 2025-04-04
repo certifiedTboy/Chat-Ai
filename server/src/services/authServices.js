@@ -3,7 +3,6 @@ const {
   createOrUpdateSession,
   checkSessionExistByEmail,
 } = require("./sessionService");
-const { createCount } = require("./questionCountServices");
 
 /**
  * @method authenticateWithGoogle
@@ -28,7 +27,6 @@ const authenticateWithGoogle = async (token) => {
 
     const newUserSession = await createOrUpdateSession(userData);
     if (newUserSession) {
-      await createCount(newUserSession.username);
       return newUserSession;
     }
   }

@@ -1,9 +1,10 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { useLocation } from "react-router-dom";
 import MainNav from "./MainNav/MainNav";
+import GeneralRoutes from "../Routes/GeneralRoutes";
 import { SEO } from "../../lib/SEO/SEO";
 
-const Layout = (props) => {
+const Layout = () => {
   const location = useLocation();
   const { pathname } = location;
 
@@ -34,10 +35,12 @@ const Layout = (props) => {
   SEO(titleData);
 
   return (
-    <Fragment>
+    <>
       <MainNav />
-      <main> {props.children} </main>
-    </Fragment>
+      <main>
+        <GeneralRoutes />
+      </main>
+    </>
   );
 };
 

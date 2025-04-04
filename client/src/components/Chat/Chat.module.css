@@ -133,7 +133,7 @@
 }
 
 .chatBoxTop {
-  height: 460px !important;
+  height: 100% !important;
 }
 
 .chatBoxTop::-webkit-scrollbar {

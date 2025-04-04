@@ -78,51 +78,47 @@ const MainChat = (props) => {
   };
 
   return (
-    <div className="mt-5">
-      <div>
-        <Nav variant="tabs" defaultActiveKey="/home">
-          <Nav.Link eventKey="disabled" disabled className={classes.room_link}>
-            {params.chatTitle}
-          </Nav.Link>
-        </Nav>
-      </div>
+    <div className="mt-5" style={{ height: "80vh" }}>
+      <Nav variant="tabs" defaultActiveKey="/home">
+        <Nav.Link eventKey="disabled" disabled className={classes.room_link}>
+          {params.chatTitle}
+        </Nav.Link>
+      </Nav>
 
-      <div>
-        <ScrollToBottom className={classes.chatBoxTop}>
-          {chatCtx?.socketMessages.map((message) => {
-            return (
-              <Message
-                id={Math.floor(Math.random() * 100000 + "abc")}
-                sender={message.sender}
-                userImage={message.userImage || botImage}
-                message={message.message}
-                own={message.sender === currentUser.username}
-              />
-            );
-          })}
-        </ScrollToBottom>
-
-        <Form onSubmit={sendMessageHandler}>
-          <Form.Group>
-            <Form.Control
-              value={message}
-              className={`${classes.chat_input} d-inline`}
-              ref={focusInput}
-              onceholder="Share your thought..."
-              onChange={messageChangeHandler}
+      <ScrollToBottom className={classes.chatBoxTop}>
+        {chatCtx?.socketMessages.map((message) => {
+          return (
+            <Message
+              id={Math.floor(Math.random() * 100000 + "abc")}
+              sender={message.sender}
+              userImage={message.userImage || botImage}
+              message={message.message}
+              own={message.sender === currentUser.username}
             />
+          );
+        })}
+      </ScrollToBottom>
 
-            <img
-              src={emojiIcon}
-              className={classes.input_img}
-              onClick={chatCtx.toggleEmoji}
-            />
-          </Form.Group>
-          <div style={{ display: "absolute" }}>
-            {chatCtx.showEmoji && <EmojiPicker onEmojiClick={onEmojiClick} />}
-          </div>
-        </Form>
-      </div>
+      <Form onSubmit={sendMessageHandler}>
+        <Form.Group>
+          <Form.Control
+            value={message}
+            className={`${classes.chat_input} d-inline`}
+            ref={focusInput}
+            onceholder="Share your thought..."
+            onChange={messageChangeHandler}
+          />
+
+          <img
+            src={emojiIcon}
+            className={classes.input_img}
+            onClick={chatCtx.toggleEmoji}
+          />
+        </Form.Group>
+        <div style={{ display: "absolute" }}>
+          {chatCtx.showEmoji && <EmojiPicker onEmojiClick={onEmojiClick} />}
+        </div>
+      </Form>
     </div>
   );
 };

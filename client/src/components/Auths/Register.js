@@ -29,7 +29,10 @@ const Register = () => {
   }
 
   return (
-    <Fragment>
+    <div
+      style={{ height: "100vh" }}
+      className="d-flex flex-column justify-content-center"
+    >
       <div className="mb-5 mt-5">
         <h3 className={classes.header_text}> Sign in</h3>
         <p className={`${classes.text}`}>Sign in with google to get started</p>
@@ -43,7 +46,7 @@ const Register = () => {
       <div>
         <GoogleLogin onSuccess={successResponse} />
       </div>
-    </Fragment>
+    </div>
   );
 };
 

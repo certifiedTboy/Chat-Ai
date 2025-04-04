@@ -1,5 +1,4 @@
 import React from "react";
-import { Form } from "react-bootstrap";
 import classes from "./Chat.module.css";
 import { NavLink } from "react-router-dom";
 
@@ -51,37 +50,28 @@ const ChatRooms = () => {
 
   return (
     <div className="mt-5">
-      {/* <Form.Group>
-        <Form.Control
-          className={classes.room_search}
-          placeholder="Search Rooms"
-        />
-      </Form.Group> */}
-
-      <div className="mt-4">
-        {rooms.map((room) => {
-          return (
-            <div key={room.id} className="mb-3 d-flex">
-              <NavLink
-                className={`${classes.room_link}`}
-                to={`/chat/${room.title}`}
-              >
-                <img
-                  className={`${classes.room_image}`}
-                  src={room.imageSource}
-                  alt="room_image"
-                />{" "}
-              </NavLink>
-              <NavLink
-                className={`${classes.room_link} d-none d-sm-none d-md-block`}
-                to={`/chat/${room.title}`}
-              >
-                {room.title}
-              </NavLink>
-            </div>
-          );
-        })}
-      </div>
+      {rooms.map((room) => {
+        return (
+          <div key={room.id} className="mb-3 d-flex align-items-center">
+            <NavLink
+              className={`${classes.room_link}`}
+              to={`/chat/${room.title}`}
+            >
+              <img
+                className={`${classes.room_image}`}
+                src={room.imageSource}
+                alt="room_image"
+              />{" "}
+            </NavLink>
+            <NavLink
+              className={`${classes.room_link} d-none d-sm-none d-md-block`}
+              to={`/chat/${room.title}`}
+            >
+              {room.title}
+            </NavLink>
+          </div>
+        );
+      })}
     </div>
   );
 };

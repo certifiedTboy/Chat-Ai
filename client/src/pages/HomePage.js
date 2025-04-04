@@ -1,14 +1,14 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import Register from "../components/Auths/Register";
 import { Container, Col, Row } from "react-bootstrap";
 
 const HomePage = () => {
   return (
-    <Container className="mt-5">
+    <Container>
       <Row>
         <Col lg={4} md={3} sm={2}></Col>
-        <Col lg={4} md={6} sm={8} style={{ margin: "200px auto" }}>
-          <Outlet />
+        <Col lg={4} md={6} sm={8}>
+          <Register />
         </Col>
         <Col lg={4} md={3} sm={2}></Col>
       </Row>

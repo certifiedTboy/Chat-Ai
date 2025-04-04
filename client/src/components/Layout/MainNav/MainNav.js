@@ -14,7 +14,11 @@ const MainNav = () => {
   };
   const { currentUser } = useSelector((state) => state.auth);
   return (
-    <Navbar expand="lg" bg="dark" data-bs-theme="dark" className="fixed-top">
+    <Navbar
+      expand="lg"
+      data-bs-theme="dark"
+      className={`fixed-top ${classes.nav_bar}`}
+    >
       <Container>
         <Navbar.Brand href="#">T-AI</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
