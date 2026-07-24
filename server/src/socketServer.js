@@ -5,15 +5,8 @@ const {
   getRoomUsers,
 } = require("./helpers/sockets/chatHelpers");
 const messageFormat = require("./helpers/sockets/messageFormat");
-const runConversation = require("./helpers/sockets/gpt/gpt");
-const runGeminiConversation = require("./helpers/sockets/googleGemini/googleGemini");
-const {
-  createNewCount,
-  updateCount,
-} = require("./services/questionCountServices");
-const {
-  profanityFilter,
-} = require("./helpers/sockets/ProfanityFilter/ProfanityFilter");
+const runGeminiConversation = require("./helpers/sockets/googleGemini");
+const { profanityFilter } = require("./helpers/sockets/ProfanityFilter");
 
 const listen = async (io) => {
   const bot = { name: "T-AI" };
@@ -24,8 +17,6 @@ const listen = async (io) => {
       const user = userJoin(socket.id, userData, room);
       socket.join(user.room);
 
-      // await createNewCount(userData.username);
-
       if (user.room === userData.username) {
         return socket.emit(
           "message",
@@ -33,28 +24,10 @@ const listen = async (io) => {
             bot.name,
             `Ask general questions to get instant answers... There is limit to numbers of question you are permmitted to ask per day and vulgar words are not permitted`,
             undefined,
-            "new-msg"
-          )
+            "new-msg",
+          ),
         );
       }
-
-      // // Broadcast to other room users when a user connects
-      // socket.broadcast
-      //   .to(user.room)
-      //   .emit(
-      //     "message",
-      //     messageFormat(
-      //       bot.name,
-      //       `${user.userData.username} has joined the chat`,
-      //       undefined
-      //     )
-      //   );
-
-      // // Send users and room info to client
-      // io.to(user.room).emit("roomUsers", {
-      //   room: user.room,
-      //   users: getRoomUsers(user.room),
-      // });
     });
 
     // Listen for chatMessage
@@ -66,8 +39,8 @@ const listen = async (io) => {
         messageFormat(
           user.userData.username,
           msg.message,
-          user.userData.profileImage
-        )
+          user.userData.profileImage,
+        ),
       );
 
       // profanity filter
@@ -82,31 +55,10 @@ const listen = async (io) => {
               messageFormat(
                 bot.name,
                 "Vulgar words are not permitted",
-                undefined
-              )
+                undefined,
+              ),
             );
         }
-
-        // check if questioncount exist
-        // const userQuestionCount = await updateCount(user.userData.username);
-
-        // if (userQuestionCount.count > 0) {
-        //   return io
-        //     .to(user.room)
-        //     .emit(
-        //       "message",
-        //       messageFormat(
-        //         bot.name,
-        //         "You have exceeded your number of trial to ask questions",
-        //         undefined
-        //       )
-        //     );
-        // }
-
-        // const response = await runGeminiConversation(
-        //   msg.message
-        //   // `${msg.message}  return response in html format wrapping code syntax in pre tag`
-        // );
 
         const response = "Hello dear how are you doing today?";
         // const response =
@@ -116,13 +68,13 @@ const listen = async (io) => {
             .to(user.room)
             .emit(
               "message",
-              messageFormat(bot.name, response.error, undefined)
+              messageFormat(bot.name, response.error, undefined),
             );
         }
         // if (userQuestionCount.count == 0) {
         io.to(user.room).emit(
           "message",
-          messageFormat(bot.name, response, undefined)
+          messageFormat(bot.name, response, undefined),
         );
       }
       // }
@@ -139,8 +91,8 @@ const listen = async (io) => {
             messageFormat(
               bot.name,
               `${userData.username} has left the chat`,
-              undefined
-            )
+              undefined,
+            ),
           );
 
         // Send users and room info

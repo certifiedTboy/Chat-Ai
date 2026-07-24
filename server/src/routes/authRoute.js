@@ -1,14 +1,16 @@
 const express = require("express");
 const {
   userLoginWithGoogle,
-  getUserSession,
+  getCurrentUser,
   logOutUser,
+  userLoginWithGithub,
 } = require("../controllers/authControllers");
 const Authenticate = require("../middlewares/Authenticate");
 const router = express.Router();
 
-router.post("/login", userLoginWithGoogle);
-router.get("/me", Authenticate, getUserSession);
+router.post("/google/login", userLoginWithGoogle);
+router.post("/github/login", userLoginWithGithub);
+router.get("/me", Authenticate, getCurrentUser);
 router.post("/logout", Authenticate, logOutUser);
 
 module.exports = router;

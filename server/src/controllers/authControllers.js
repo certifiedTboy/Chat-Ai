@@ -1,9 +1,9 @@
 const {
   authenticateWithGoogle,
-  getCurrentUserSession,
+  checkUserExist,
+  deleteCurrentUser,
+  authenticateWithGithub,
 } = require("../services/authServices");
-
-const { deleteSession } = require("../services/sessionService");
 
 /**
  * @method userLoginWithGoogle
@@ -19,7 +19,7 @@ const userLoginWithGoogle = async (req, res) => {
     const authenticatedUser = await authenticateWithGoogle(authToken);
 
     if (authenticatedUser) {
-      const jwtTokenOptions = {
+      const cookieOptions = {
         expires: authenticatedUser.expireAt,
         maxAge: authenticatedUser.expireAt,
         httpOnly: true,
@@ -27,12 +27,38 @@ const userLoginWithGoogle = async (req, res) => {
         secure: true,
       };
       res
-        .cookie("authToken", authenticatedUser.authToken, jwtTokenOptions)
-        .json({ message: "user login success", authenticatedUser });
+        .cookie("authToken", authenticatedUser.authToken, cookieOptions)
+        .json({ message: "user login success", ...authenticatedUser });
     } else {
       res.status(400).json({ error: "user authentication failed" });
     }
   } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "something went wrong" });
+  }
+};
+
+const userLoginWithGithub = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    const authenticatedUser = await authenticateWithGithub(code);
+
+    if (authenticatedUser) {
+      const cookieOptions = {
+        expires: authenticatedUser.expireAt,
+        maxAge: authenticatedUser.expireAt,
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      };
+
+      res
+        .cookie("authToken", authenticatedUser.authToken, cookieOptions)
+        .json({ message: "user login success", ...authenticatedUser });
+    }
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "something went wrong" });
   }
 };
@@ -44,35 +70,14 @@ const userLoginWithGoogle = async (req, res) => {
  * @param {NextFunction}next
  * @return {Promise}
  */
-const getUserSession = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
     const { email } = req.user;
 
-    const { authToken } = req.cookies;
+    const currentUser = checkUserExist(email);
 
-    if (email) {
-      const currentSession = await getCurrentUserSession(email);
-      if (!currentSession) {
-        return res.status(400).json({ error: "session does not exist" });
-      }
-
-      return res.status(200).json({ message: "success", currentSession });
-    } else {
-      const sessionDeleted = await deleteSession(authToken);
-
-      if (sessionDeleted) {
-        const jwtTokenOptions = {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        };
-        return res
-          .clearCookie("authToken", jwtTokenOptions)
-          .json({ error: "invalid token or token expired" });
-      }
-    }
+    return res.status(200).json({ message: "success", currentUser });
   } catch (error) {
-    await deleteSession(authToken);
     res.status(500).json({ error: "something went wrong" });
   }
 };
@@ -86,9 +91,8 @@ const getUserSession = async (req, res) => {
  */
 const logOutUser = async (req, res) => {
   try {
-    const { authToken } = req.cookies;
-
-    const deletedSession = await deleteSession(authToken);
+    const { email } = req.user;
+    const deletedSession = await deleteCurrentUser(email);
 
     if (deletedSession) {
       const jwtTokenOptions = {
@@ -105,4 +109,9 @@ const logOutUser = async (req, res) => {
   }
 };
 
-module.exports = { userLoginWithGoogle, getUserSession, logOutUser };
+module.exports = {
+  userLoginWithGoogle,
+  getCurrentUser,
+  logOutUser,
+  userLoginWithGithub,
+};

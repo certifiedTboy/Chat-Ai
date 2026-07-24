@@ -7,12 +7,12 @@ const app = express();
 
 const allowedOrigins = [
   "https://chat-ai-client-alpha.vercel.app",
-  "http://localhost:3000",
+  "http://localhost:5173",
 ];
 
 const expressOptions = {
   urlencodExtended: true,
-  requestSizeLimit: "20mb",
+  requestSizeLimit: "100kb",
 };
 
 const corsOption = {
