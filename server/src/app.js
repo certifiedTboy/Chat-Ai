@@ -8,6 +8,7 @@ const app = express();
 const allowedOrigins = [
   "https://chat-ai-client-alpha.vercel.app",
   "http://localhost:5173",
+  "https://chat-ai-seven-indol.vercel.app",
 ];
 
 const expressOptions = {
