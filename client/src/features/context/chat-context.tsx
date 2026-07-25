@@ -32,6 +32,7 @@ const API_URL = import.meta.env.VITE_SERVER_SOCKET_URL;
 export const ChatContextProvider = ({
   children,
 }: React.PropsWithChildren<any>) => {
+  const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [socketMessages, setSocketMessages] = useState<Message[]>([]);
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -62,28 +63,63 @@ export const ChatContextProvider = ({
   }
 
   useEffect(() => {
-    socket?.current?.on("message", (msg: Message) => {
-      setSocketMessages((prevMessages) => {
-        const lastMessage = prevMessages[prevMessages.length - 1];
-        if (lastMessage && !lastMessage.isSender && lastMessage.id === msg.id) {
-          // If the last message is from the assistant and has the same ID,
-          // append the new text to it for a streaming effect.
-          const updatedMessages = [...prevMessages];
-          updatedMessages[prevMessages.length - 1] = {
-            ...lastMessage,
-            text: lastMessage.text + msg.text,
-          };
-          return updatedMessages;
+    const handleMessage = (msg: Message) => {
+      // Stop previous stream
+      if (streamIntervalRef.current) {
+        clearInterval(streamIntervalRef.current);
+        streamIntervalRef.current = null;
+      }
+
+      const messageId = crypto.randomUUID();
+
+      // Insert an empty AI message
+      setSocketMessages((prev) => [
+        ...prev,
+        {
+          ...msg,
+          id: messageId,
+          text: "",
+          isStreaming: true,
+        },
+      ]);
+
+      let charIndex = 0;
+
+      streamIntervalRef.current = window.setInterval(() => {
+        charIndex += 3;
+
+        const revealed = msg.text.slice(0, charIndex);
+        const done = charIndex >= msg.text.length;
+
+        setSocketMessages((prev) =>
+          prev.map((m) =>
+            m.id === messageId
+              ? {
+                  ...m,
+                  text: revealed,
+                  isStreaming: !done,
+                }
+              : m,
+          ),
+        );
+
+        if (done && streamIntervalRef.current) {
+          clearInterval(streamIntervalRef.current);
+          streamIntervalRef.current = null;
         }
-        // Otherwise, add the new message.
-        return [...prevMessages, msg];
-      });
-    });
+      }, 1);
+    };
+
+    socket.current?.on("message", handleMessage);
 
     return () => {
-      socket?.current?.off("message");
+      socket.current?.off("message", handleMessage);
+
+      if (streamIntervalRef.current) {
+        clearInterval(streamIntervalRef.current);
+      }
     };
-  }, [socket]);
+  }, []);
 
   const value = {
     sendMessage,

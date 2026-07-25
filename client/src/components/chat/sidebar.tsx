@@ -6,7 +6,6 @@ import {
   Moon,
   Sun,
   PanelLeftClose,
-  Settings,
   Bot,
   LogOut,
 } from "lucide-react";
@@ -104,7 +103,7 @@ export function Sidebar({
           <Button
             variant="outline"
             onClick={onNewChat}
-            className="flex-1 justify-start gap-2 h-10 px-3 bg-sidebar border-sidebar-border hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg no-default-hover-elevate"
+            className="flex-1 cursor-pointer justify-start gap-2 h-10 px-3 bg-sidebar border-sidebar-border hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg no-default-hover-elevate"
           >
             <Bot size={18} className="text-primary" />
             <span className="font-medium text-sm">New Chat</span>
@@ -123,63 +122,7 @@ export function Sidebar({
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 pt-4 custom-scrollbar">
-          <div className="text-xs font-medium text-muted-foreground px-2 mb-2">
-            Today
-          </div>
-          <div className="space-y-1 mb-6">
-            {MOCK_CHATS.filter((c) => c.date === "Today").map((chat) => (
-              <button
-                key={chat.id}
-                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground transition-colors truncate whitespace-nowrap flex items-center gap-2"
-              >
-                <MessageSquare
-                  size={16}
-                  className="shrink-0 text-muted-foreground"
-                />
-                <span className="truncate">{chat.title}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="text-xs font-medium text-muted-foreground px-2 mb-2">
-            Yesterday
-          </div>
-          <div className="space-y-1 mb-6">
-            {MOCK_CHATS.filter((c) => c.date === "Yesterday").map((chat) => (
-              <button
-                key={chat.id}
-                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground transition-colors truncate whitespace-nowrap flex items-center gap-2"
-              >
-                <MessageSquare
-                  size={16}
-                  className="shrink-0 text-muted-foreground"
-                />
-                <span className="truncate">{chat.title}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="text-xs font-medium text-muted-foreground px-2 mb-2">
-            Previous 7 Days
-          </div>
-          <div className="space-y-1 mb-6">
-            {MOCK_CHATS.filter((c) => c.date === "Previous 7 Days").map(
-              (chat) => (
-                <button
-                  key={chat.id}
-                  className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground transition-colors truncate whitespace-nowrap flex items-center gap-2"
-                >
-                  <MessageSquare
-                    size={16}
-                    className="shrink-0 text-muted-foreground"
-                  />
-                  <span className="truncate">{chat.title}</span>
-                </button>
-              ),
-            )}
-          </div>
-        </div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 pt-4 custom-scrollbar"></div>
 
         <div className="p-3 border-t border-sidebar-border space-y-1">
           {/* <Button

@@ -18,18 +18,6 @@ const listen = async (io) => {
     socket.on("chatMessage", async (msg) => {
       const chatUser = user.getCurrentChatUser(msg.sender);
 
-      // // profanity filter
-      // const isBad = await profanityFilter(msg.message);
-
-      // if (isBad) {
-      //   return io
-      //     .to(chatUser.room)
-      //     .emit(
-      //       "message",
-      //       messageFormat(bot.name, "Vulgar words are not permitted"),
-      //     );
-      // }
-
       io.to(chatUser.room).emit("typing", messageFormat(bot.name, null));
 
       const response = await runGeminiConversation(msg?.text);

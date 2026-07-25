@@ -111,7 +111,7 @@ export function ChatMessages() {
               key={index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex gap-2 items-center ${message?.isSender ? "flex-row-reverse" : "flex-row"}`}
+              className={`flex gap-2  ${message?.isSender ? "flex-row-reverse" : "flex-row"}`}
             >
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
