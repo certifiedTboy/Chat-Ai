@@ -1,4 +1,6 @@
 import { createContext, useContext, useState } from "react";
+import { useLocation } from "wouter";
+import { useHttp } from "@/hooks/use-http";
 
 interface IUser {
   name: string;
@@ -27,11 +29,22 @@ export const AuthContextProvider = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<IUser | null>(null);
+  const [, setLocation] = useLocation();
 
-  function logout() {}
+  const [logoutUser] = useHttp<void>();
+
+  function logout() {
+    localStorage.removeItem("isAuth");
+    setIsLoggedIn(false);
+    setUser(null);
+    logoutUser("/auth/logout", "POST", "include", null, {
+      "Content-Type": "application/json",
+    });
+    setLocation("/auth", { replace: true });
+  }
 
   function checkUserIsAuthenticated(userData: IUser) {
-    if (localStorage.getItem("isAuthenticated")) {
+    if (localStorage.getItem("isAuth")) {
       setIsLoggedIn(true);
       setUser({ ...userData });
     } else {

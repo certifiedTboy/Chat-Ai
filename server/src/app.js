@@ -34,15 +34,19 @@ const corsOption = {
   preflightContinue: false,
 };
 
-const GlobalErrorHandler = (err, req, res, next) => {
-  next();
-};
+function globalExceptionHandler(err, req, res, _next) {
+  let statusCode = err?.statusCode || 500;
+  let message = err?.message || "Something went wrong";
+  let error;
+
+  res.status(statusCode).json({ success: false, statusCode, message, error });
+}
 
 app.use(cookieParser());
 app.use(cors(corsOption));
 app.use(express.json({ limit: expressOptions.requestSizeLimit }));
 app.use("/api/v1", v1Routes);
-app.use(GlobalErrorHandler);
+app.use(globalExceptionHandler);
 
 // Server health test
 app.get("/", (req, res) => {

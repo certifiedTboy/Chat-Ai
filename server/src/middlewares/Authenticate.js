@@ -1,19 +1,20 @@
 const { verifyAccessToken } = require("../helpers/authHelpers");
+const { HttpException } = require("../config/exception");
 
 const Authenticate = async (req, res, next) => {
   try {
     const { authToken } = req.cookies;
     if (!authToken) {
-      return res.status(403).json({ error: "Unathorized" });
+      throw new HttpException(401, "jwt expired");
     }
     const authPayload = await verifyAccessToken(authToken);
     if (!authPayload) {
-      return res.status(401).json({ error: "jwt expired" });
+      throw new HttpException(401, "jwt expired");
     }
-    req.user = { email: "etosin70@gmail.com" };
+    req.user = authPayload;
     next();
   } catch (error) {
-    return res.status(403).json({ error: "Unathorized" });
+    next(error);
   }
 };
 

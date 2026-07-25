@@ -1,18 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/chat/sidebar";
-import { ChatMessages, type Message } from "@/components/chat/chat-messages";
+import { ChatMessages } from "@/components/chat/chat-messages";
 import { ChatInput } from "@/components/chat/chat-input";
 import { PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { MOCK_RESPONSES } from "@/lib/mock-data";
+import { useChatContext } from "@/features/context/chat-context";
+import { useAuthContext } from "@/features/context/auth-context";
 
 export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { joinRoom } = useChatContext();
+  const { user, isLoggedIn } = useAuthContext();
+
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      joinRoom(user, user.email);
+    }
+  }, [user, isLoggedIn]);
 
   // Check for mobile screen size
   useEffect(() => {
@@ -30,56 +37,6 @@ export default function ChatPage() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleSend = (content: string) => {
-    // Clear any in-progress stream
-    if (streamIntervalRef.current) {
-      clearInterval(streamIntervalRef.current);
-      streamIntervalRef.current = null;
-    }
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setIsTyping(true);
-
-    // Brief initial delay to mimic network latency, then stream
-    setTimeout(() => {
-      const fullText =
-        MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)];
-      const aiId = (Date.now() + 1).toString();
-
-      // Add an empty streaming message
-      setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        { id: aiId, role: "assistant", content: "", isStreaming: true },
-      ]);
-
-      let charIndex = 0;
-      // Stream ~3 chars per tick at 18ms → ~167 chars/sec, feels like a fast LLM
-      streamIntervalRef.current = setInterval(() => {
-        charIndex += 3;
-        const revealed = fullText.slice(0, charIndex);
-        const done = charIndex >= fullText.length;
-
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === aiId ? { ...m, content: revealed, isStreaming: !done } : m,
-          ),
-        );
-
-        if (done && streamIntervalRef.current) {
-          clearInterval(streamIntervalRef.current);
-          streamIntervalRef.current = null;
-        }
-      }, 18);
-    }, 600);
-  };
-
   return (
     <div className="flex h-[100dvh] w-full bg-background overflow-hidden">
       <Sidebar
@@ -87,7 +44,7 @@ export default function ChatPage() {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         isMobile={isMobile}
         onNewChat={() => {
-          setMessages([]);
+          // setMessages([]);
           if (isMobile) setSidebarOpen(false);
         }}
       />
@@ -116,14 +73,10 @@ export default function ChatPage() {
           </div>
         </header>
 
-        <ChatMessages
-          messages={messages}
-          isTyping={isTyping}
-          onSend={handleSend}
-        />
+        <ChatMessages />
 
         <div className="bg-gradient-to-t from-background via-background/95 to-transparent pt-6">
-          <ChatInput onSend={handleSend} disabled={isTyping} />
+          <ChatInput />
         </div>
       </main>
     </div>

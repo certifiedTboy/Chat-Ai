@@ -1,83 +1,52 @@
-const {
-  userJoin,
-  getCurrentUser,
-  userLeave,
-  getRoomUsers,
-} = require("./helpers/sockets/chatHelpers");
-const messageFormat = require("./helpers/sockets/messageFormat");
-const runGeminiConversation = require("./helpers/sockets/googleGemini");
-const { profanityFilter } = require("./helpers/sockets/ProfanityFilter");
+const { messageFormat } = require("./helpers/message");
+const { runGeminiConversation } = require("./helpers/gemini");
+const { profanityFilter } = require("./helpers/profanity-filter");
+const user = require("./model/user");
 
 const listen = async (io) => {
   const bot = { name: "T-AI" };
 
   // Run when client connects
   io.on("connection", (socket) => {
-    socket.on("joinRoom", async ({ userData, room }) => {
-      const user = userJoin(socket.id, userData, room);
-      socket.join(user.room);
+    socket.on("joinRoom", async (userData) => {
+      const addedUser = user.addUserToChat(userData);
 
-      if (user.room === userData.username) {
-        return socket.emit(
-          "message",
-          messageFormat(
-            bot.name,
-            `Ask general questions to get instant answers... There is limit to numbers of question you are permmitted to ask per day and vulgar words are not permitted`,
-            undefined,
-            "new-msg",
-          ),
-        );
-      }
+      socket.join(userData.room);
     });
 
     // Listen for chatMessage
     socket.on("chatMessage", async (msg) => {
-      const user = getCurrentUser(socket.id);
+      const chatUser = user.getCurrentChatUser(msg.sender);
 
-      io.to(user.room).emit(
-        "message",
-        messageFormat(
-          user.userData.username,
-          msg.message,
-          user.userData.profileImage,
-        ),
-      );
+      // // profanity filter
+      // const isBad = await profanityFilter(msg.message);
 
-      // profanity filter
-      const isBad = await profanityFilter(msg.message);
+      // if (isBad) {
+      //   return io
+      //     .to(chatUser.room)
+      //     .emit(
+      //       "message",
+      //       messageFormat(bot.name, "Vulgar words are not permitted"),
+      //     );
+      // }
 
-      if (user.room === user.userData.username) {
-        if (isBad) {
-          return io
-            .to(user.room)
-            .emit(
-              "message",
-              messageFormat(
-                bot.name,
-                "Vulgar words are not permitted",
-                undefined,
-              ),
-            );
-        }
+      io.to(chatUser.room).emit("typing", messageFormat(bot.name, null));
 
-        const response = "Hello dear how are you doing today?";
-        // const response =
-        //   "```javascript function addNumbers(num1, num2) { return num1 + num2; } const num1 = 5; const num2 = 3; const sum = addNumbers(num1, num2); console.log(sum); // Output: 8 ```";
-        if (response.error) {
-          return io
-            .to(user.room)
-            .emit(
-              "message",
-              messageFormat(bot.name, response.error, undefined),
-            );
-        }
-        // if (userQuestionCount.count == 0) {
-        io.to(user.room).emit(
+      const response = await runGeminiConversation(msg?.text);
+
+      if (response.error) {
+        io.to(chatUser.room).emit(
           "message",
-          messageFormat(bot.name, response, undefined),
+          messageFormat(bot.name, response.error),
+        );
+      } else {
+        io.to(chatUser.room).emit(
+          "message",
+          messageFormat(bot.name, response?.result),
         );
       }
-      // }
+
+      io.to(chatUser.room).emit("stopTyping", messageFormat(bot.name, null));
     });
 
     // Runs when client disconnects
@@ -88,11 +57,7 @@ const listen = async (io) => {
           .to(room)
           .emit(
             "message",
-            messageFormat(
-              bot.name,
-              `${userData.username} has left the chat`,
-              undefined,
-            ),
+            messageFormat(bot.name, `${userData.username} has left the chat`),
           );
 
         // Send users and room info

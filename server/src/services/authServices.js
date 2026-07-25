@@ -26,6 +26,7 @@ const authenticateWithGoogle = async (token) => {
       name: response?.data?.name,
       email: response?.data?.email,
       avatar: response?.data?.picture,
+      username: response?.data?.email.split("@")[0],
     };
 
     const accessToken = generateAccessToken(userData);
@@ -37,7 +38,7 @@ const authenticateWithGoogle = async (token) => {
       userData.email.split("@")[0],
     );
 
-    return { ...userData, authToken: accessToken };
+    return { userData, authToken: accessToken };
   } else {
     return false;
   }
@@ -78,6 +79,7 @@ const authenticateWithGithub = async (code) => {
     name: profile.name,
     avatar: profile.avatar_url,
     email: primaryEmail,
+    username: primaryEmail.split("@")[0],
   };
 
   const accessToken = generateAccessToken(userData);
@@ -89,7 +91,7 @@ const authenticateWithGithub = async (code) => {
     userData.email.split("@")[0],
   );
 
-  return { ...userData, authToken: accessToken };
+  return { userData, authToken: accessToken };
 };
 
 const checkUserExist = (email) => {

@@ -1,5 +1,5 @@
 const axios = require("axios");
-const envVariable = require("../../config/index");
+const envVariable = require("../config/index");
 
 const { RAPID_API_KEY, RAPID_API_HOST, FILTER_URL } = envVariable;
 

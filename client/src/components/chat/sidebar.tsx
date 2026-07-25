@@ -8,6 +8,7 @@ import {
   PanelLeftClose,
   Settings,
   Bot,
+  LogOut,
 } from "lucide-react";
 import { useAuthContext } from "@/features/context/auth-context";
 import { useHttp } from "@/hooks/use-http";
@@ -37,9 +38,10 @@ export function Sidebar({
 }: SidebarProps) {
   const { theme, setTheme } = useTheme();
 
-  const [getCurrentUser, { data }] = useHttp<{ currentUser: any }>();
+  const [getCurrentUser, { data, error }] = useHttp<{ currentUser: any }>();
 
-  const { user, isLoggedIn, checkUserIsAuthenticated } = useAuthContext();
+  const { user, isLoggedIn, checkUserIsAuthenticated, logout } =
+    useAuthContext();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -69,6 +71,12 @@ export function Sidebar({
       checkUserIsAuthenticated(data.currentUser);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (error === "jwt expired") {
+      logout();
+    }
+  }, [error]);
 
   return (
     <>
@@ -174,17 +182,17 @@ export function Sidebar({
         </div>
 
         <div className="p-3 border-t border-sidebar-border space-y-1">
-          <Button
+          {/* <Button
             variant="ghost"
-            className="w-full justify-start gap-3 h-10 px-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg"
+            className="w-full cursor-pointer justify-start gap-3 h-10 px-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg"
           >
             <Settings size={16} />
             <span className="text-sm">Settings</span>
-          </Button>
+          </Button> */}
           <Button
             variant="ghost"
             onClick={toggleTheme}
-            className="w-full justify-start gap-3 h-10 px-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg"
+            className="w-full cursor-pointer justify-start gap-3 h-10 px-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg"
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             <span className="text-sm">
@@ -192,6 +200,14 @@ export function Sidebar({
             </span>
           </Button>
 
+          <Button
+            variant="ghost"
+            onClick={logout}
+            className="w-full cursor-pointer justify-start gap-3 h-10 px-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg"
+          >
+            <LogOut size={16} />
+            <span className="text-sm">Logout</span>
+          </Button>
           <div className="mt-2 pt-2 border-t border-sidebar-border flex items-center gap-3 px-3 py-2">
             {isLoggedIn && user?.avatar ? (
               <div className="flex items-center gap-2">

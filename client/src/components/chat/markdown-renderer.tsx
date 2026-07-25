@@ -1,6 +1,5 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MarkdownRendererProps {
   content: string;
@@ -14,17 +13,23 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
         components={{
           pre({ node, children, ...props }) {
             return (
-              <pre className="not-prose overflow-hidden rounded-lg bg-zinc-950 my-4" {...props}>
+              <pre
+                className="not-prose overflow-hidden rounded-lg bg-zinc-950 my-4"
+                {...props}
+              >
                 {children}
               </pre>
             );
           },
           code({ node, className, children, ...props }: any) {
-            const match = /language-(\w+)/.exec(className || '');
-            
+            const match = /language-(\w+)/.exec(className || "");
+
             if (!match) {
               return (
-                <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono" {...props}>
+                <code
+                  className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono"
+                  {...props}
+                >
                   {children}
                 </code>
               );
@@ -34,7 +39,9 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
               <div className="flex flex-col w-full text-sm font-mono">
                 <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-800 text-zinc-400">
                   <span>{match[1]}</span>
-                  <button className="text-xs hover:text-zinc-200 transition-colors">Copy code</button>
+                  <button className="text-xs hover:text-zinc-200 transition-colors">
+                    Copy code
+                  </button>
                 </div>
                 <div className="p-4 overflow-x-auto text-zinc-100 bg-zinc-950">
                   <code {...props} className={className}>
@@ -48,10 +55,14 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             return <p className="mb-4 last:mb-0">{children}</p>;
           },
           ul({ children }) {
-            return <ul className="mb-4 list-disc pl-6 space-y-1">{children}</ul>;
+            return (
+              <ul className="mb-4 list-disc pl-6 space-y-1">{children}</ul>
+            );
           },
           ol({ children }) {
-            return <ol className="mb-4 list-decimal pl-6 space-y-1">{children}</ol>;
+            return (
+              <ol className="mb-4 list-decimal pl-6 space-y-1">{children}</ol>
+            );
           },
           li({ children }) {
             return <li>{children}</li>;
@@ -90,11 +101,9 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           },
           td({ children }) {
             return (
-              <td className="px-4 py-2 border border-border">
-                {children}
-              </td>
+              <td className="px-4 py-2 border border-border">{children}</td>
             );
-          }
+          },
         }}
       >
         {content}

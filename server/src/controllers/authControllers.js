@@ -12,33 +12,28 @@ const {
  * @param {NextFunction}next
  * @return {Promise}
  */
-const userLoginWithGoogle = async (req, res) => {
+const userLoginWithGoogle = async (req, res, next) => {
   try {
     const { authToken } = req.body;
 
     const authenticatedUser = await authenticateWithGoogle(authToken);
 
-    if (authenticatedUser) {
-      const cookieOptions = {
-        expires: authenticatedUser.expireAt,
-        maxAge: authenticatedUser.expireAt,
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      };
-      res
-        .cookie("authToken", authenticatedUser.authToken, cookieOptions)
-        .json({ message: "user login success", ...authenticatedUser });
-    } else {
-      res.status(400).json({ error: "user authentication failed" });
-    }
+    const cookieOptions = {
+      expires: authenticatedUser.expireAt,
+      maxAge: authenticatedUser.expireAt,
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    };
+    return res
+      .cookie("authToken", authenticatedUser.authToken, cookieOptions)
+      .json({ message: "user login success", ...authenticatedUser.userData });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "something went wrong" });
+    next(error);
   }
 };
 
-const userLoginWithGithub = async (req, res) => {
+const userLoginWithGithub = async (req, res, next) => {
   try {
     const { code } = req.body;
 
@@ -53,13 +48,12 @@ const userLoginWithGithub = async (req, res) => {
         secure: true,
       };
 
-      res
+      return res
         .cookie("authToken", authenticatedUser.authToken, cookieOptions)
-        .json({ message: "user login success", ...authenticatedUser });
+        .json({ message: "user login success", ...authenticatedUser.userData });
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "something went wrong" });
+    next(error);
   }
 };
 
@@ -70,7 +64,7 @@ const userLoginWithGithub = async (req, res) => {
  * @param {NextFunction}next
  * @return {Promise}
  */
-const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req, res, next) => {
   try {
     const { email } = req.user;
 
@@ -78,7 +72,7 @@ const getCurrentUser = async (req, res) => {
 
     return res.status(200).json({ message: "success", currentUser });
   } catch (error) {
-    res.status(500).json({ error: "something went wrong" });
+    next(error);
   }
 };
 
@@ -89,7 +83,7 @@ const getCurrentUser = async (req, res) => {
  * @param {NextFunction}next
  * @return {Promise}
  */
-const logOutUser = async (req, res) => {
+const logOutUser = async (req, res, next) => {
   try {
     const { email } = req.user;
     const deletedSession = await deleteCurrentUser(email);
@@ -105,7 +99,7 @@ const logOutUser = async (req, res) => {
         .json({ message: "logout successfully" });
     }
   } catch (error) {
-    return res.status(500).json({ error: "something went wrong" });
+    next(error);
   }
 };
 

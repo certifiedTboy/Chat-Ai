@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { AuthContextProvider } from "./features/context/auth-context";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ChatContextProvider } from "./features/context/chat-context";
 
 import App from "./App";
 
@@ -11,7 +12,9 @@ createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider
       clientId={import.meta.env.VITE_APP_GOOGLE_OAUTH_CLIENT_ID}
     >
-      <App />
+      <ChatContextProvider>
+        <App />
+      </ChatContextProvider>
     </GoogleOAuthProvider>
   </AuthContextProvider>,
 );

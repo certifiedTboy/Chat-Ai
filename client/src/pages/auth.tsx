@@ -6,6 +6,7 @@ import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHttp } from "@/hooks/use-http";
 import { useAuthContext } from "@/features/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
 
 const visitGithubConsentScreen = () => {
   const params = new URLSearchParams({
@@ -30,6 +31,7 @@ export default function AuthPage() {
 
   const [, setLocation] = useLocation();
 
+  const { toast } = useToast();
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) =>
       loginWithGoogle(
@@ -70,6 +72,13 @@ export default function AuthPage() {
       checkUserIsAuthenticated(githubData);
       setLocation("/chat", { replace: true });
     }
+    if (githubError) {
+      toast({
+        title: "GitHub Sign-in Error",
+        description: githubError,
+        variant: "destructive",
+      });
+    }
 
     if (googleData) {
       localStorage.setItem("isAuth", "true");
@@ -77,7 +86,14 @@ export default function AuthPage() {
       checkUserIsAuthenticated(googleData);
       setLocation("/chat", { replace: true });
     }
-  }, [githubData, googleData]);
+    if (googleError) {
+      toast({
+        title: "Google Sign-in Error",
+        description: googleError,
+        variant: "destructive",
+      });
+    }
+  }, [githubData, googleData, githubError, googleError, toast]);
 
   return (
     <div className="min-h-[100dvh] w-full flex items-center justify-center bg-background selection:bg-primary/20 p-4">
