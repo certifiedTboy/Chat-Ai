@@ -1,14 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
-import {
-  Plus,
-  MessageSquare,
-  Moon,
-  Sun,
-  PanelLeftClose,
-  Bot,
-  LogOut,
-} from "lucide-react";
+import { Plus, Moon, Sun, PanelLeftClose, Bot, LogOut } from "lucide-react";
 import { useAuthContext } from "@/features/context/auth-context";
 import { useHttp } from "@/hooks/use-http";
 import { Button } from "@/components/ui/button";
@@ -20,14 +12,6 @@ interface SidebarProps {
   isMobile: boolean;
   onNewChat?: () => void;
 }
-
-const MOCK_CHATS = [
-  { id: "1", title: "React Performance Tuning", date: "Today" },
-  { id: "2", title: "Explain Quantum Computing", date: "Yesterday" },
-  { id: "3", title: "Python Web Scraping Script", date: "Previous 7 Days" },
-  { id: "4", title: "Healthy Dinner Recipes", date: "Previous 7 Days" },
-  { id: "5", title: "Email to Manager Draft", date: "Previous 30 Days" },
-];
 
 export function Sidebar({
   isOpen,
